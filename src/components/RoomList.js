@@ -36,12 +36,16 @@ class RoomList extends Component {
     }
 
     render() {
-        return( 
+        return(
             <div>
                 <section>
                     {
                       this.state.rooms.map((room, index) =>
-                        <div key={index}>{room.name}</div>
+                        <div
+                          key={index}
+                          onClick={() => this.props.setActiveRoom(room)}>
+                          {room.name}
+                        </div>
                       )
                     }
                 </section>
@@ -52,7 +56,7 @@ class RoomList extends Component {
                           <input
                             type="text"
                             placeholder="New Room Name"
-                            value={this.state.newRoomName} 
+                            value={this.state.newRoomName}
                             onChange={ (e) => this.handleChange(e) } />
                           <input type="submit" value="submit" />
                         </label>
