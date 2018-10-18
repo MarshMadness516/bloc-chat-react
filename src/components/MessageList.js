@@ -11,7 +11,7 @@ class MessageList extends Component {
           sentAt: '',
         }
 
-        this.messagesRef = this.props.firebase.database().ref('messages');
+        this.messagesRef = this.props.firebase.database().ref('Messages');
 
     }
 
