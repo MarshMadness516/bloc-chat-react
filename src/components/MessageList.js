@@ -24,20 +24,12 @@ class MessageList extends Component {
     }
 
     render() {
-      if(this.props.activeRoom === undefined) {
-        return (
-          <div>
-            <h3>Not currently in a chatroom</h3>
-            <h4>Select or create one to start chatting</h4>
-          </div>
-        );
-      } else {
+
         return (
           <div>
             <h3>{this.props.activeRoomName}</h3>
-            <ul>
-              {this.state.messages
-                .filter((message) => message.roomId === this.props.activeRoom.key)
+              <div>{this.state.messages
+                .filter(message => message.roomId === this.props.activeRoom.key)
                 .map((message, index) =>
                   <div key={index}>
                     <p id="username">Username: {message.username}</p>
@@ -45,10 +37,9 @@ class MessageList extends Component {
                     <p id="timestamp">Timestamp: {message.sentAt}</p>
                   </div>
               )}
-            </ul>
+              </div>
           </div>
         );
-        }
       }
     }
 
