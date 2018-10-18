@@ -20,33 +20,31 @@ class App extends Component {
     super(props);
     this.state = {
       activeRoom: '',
-      activeRoomName: ''
+      activeRoomName: '',
+      activeRoomKey: ''
     }
 
   }
 
-  setActiveRoom(e) {
-    this.setState({ activeRoomKey: e.target.getAttribute('data-rooms-key'), activeRoomName: e.target.getAttribute('data-rooms-name') });
-    console.log(this.state.activeRoom);
+  setActiveRoom(room) {
+    this.setState({ activeRoom: room })
+    console.log(this.state.activeRoom)
   }
 
   render() {
     return (
       <div className="App">
-        <header>
           <div className="sidebar">
             <h1>Bloc Chat</h1>
             <RoomList
               firebase={ firebase }
-              activeRoom={ this.state.activeRoomKey }
-              setActiveRoom={(e) => this.setActiveRoom(e) } />
+              activeRoom={ this.state.activeRoom }
+              setActiveRoom={(room) => this.setActiveRoom(room) } />
           </div>
-        </header>
         <div>
           <MessageList
             firebase={firebase}
-            activeRoom={this.state.activeRoomKey}
-            activeRoomName={this.state.activeRoomName} />
+            activeRoom={this.state.activeRoom} />
         </div>
       </div>
     );
