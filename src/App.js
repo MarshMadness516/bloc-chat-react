@@ -3,6 +3,7 @@ import * as firebase from 'firebase';
 import './App.css';
 import RoomList from './components/RoomList';
 import MessageList from './components/MessageList';
+import User from './components/User';
 
   // Initialize Firebase
   var config = {
@@ -20,9 +21,44 @@ class App extends Component {
     super(props);
     this.state = {
       activeRoom: '',
-      activeRoomName: ''
+      activeRoomName: '',
+      user: this.getGuestUser()
     }
 
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged( (user) => {
+      if (user) {
+        this.setUser( user );
+      } else {
+        this.setUser( this.getGuestUser() );
+      }
+    });
+  }
+
+  setUser( user ){
+    this.setState( { user: user } );
+  }
+  getGuestUser() {
+    return { displayName: "Guest", uid: "GUEST" };
+  }
+
+  signIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup( provider )
+      .then( ( result ) => {
+        console.log("Sign-in successful: " + result.user.displayName )
+      } )
+      .catch( (error) => {
+        console.log( error.toString() )
+      });
+  }
+
+  signOut() {
+    firebase.auth().signOut()
+      .then( () => { console.log( "Sign-out successful" ) })
+      .catch( (error) => { console.log( error.toString() ) });
   }
 
   setActiveRoom(room) {
@@ -31,10 +67,18 @@ class App extends Component {
   }
 
   render() {
+    const user = this.state.user;
+    const isGuest = (user.uid === this.getGuestUser().uid );
     return (
       <div className="App">
           <div className="sidebar">
             <h1>Bloc Chat</h1>
+            <User
+              firebase={ firebase }
+              user={ user }
+              isSignedIn={ !isGuest }
+              signIn={ () => this.signIn() }
+              signOut={ () => this.signOut() } />
             <RoomList
               firebase={ firebase }
               activeRoom={ this.state.activeRoom }
@@ -43,7 +87,9 @@ class App extends Component {
         <div>
           <MessageList
             firebase={firebase}
-            activeRoom={this.state.activeRoom} />
+            activeRoom={this.state.activeRoom}
+            setUser={this.setUser}
+            user={this.state.user} />
         </div>
       </div>
     );

@@ -5,14 +5,17 @@ class MessageList extends Component {
         super(props);
         this.state = {
           messages: [],
-          username: '',
-          content: '',
-          roomID: '',
-          sentAt: '',
+          Message: [{
+            username: '',
+            content: '',
+            roomId: '',
+            sentAt: '',
+          }],
+          newMessage: ''
         }
 
         this.messagesRef = this.props.firebase.database().ref('Messages');
-
+        this.createMessages=this.createMessages.bind(this);
     }
 
     componentDidMount() {
@@ -22,6 +25,30 @@ class MessageList extends Component {
           this.setState({ messages: this.state.messages.concat( message ) });
         });
     }
+
+  createMessages(newMessage) {
+    this.messagesRef.push({
+      username: this.props.user ? this.props.user.displayName : 'Guest',
+      content: this.state.newMessage,
+      roomId: this.props.activeRoom.key,
+      sentAt: this.props.firebase.database.ServerValue.TIMESTAMP
+    });
+
+    this.setState({newMessage:''});
+  }
+
+  handleChange(e){
+    this.setState({newMessage: e.target.value});
+  }
+
+  convertTime(timestamp) {
+    const date = new Date(timestamp*1000);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return [date, hours, minutes, seconds];
+  }
 
     render() {
 
@@ -34,10 +61,16 @@ class MessageList extends Component {
                   <div key={index}>
                     <p id="username">Sent By: {message.username}</p>
                     <p id="content">Message: {message.content}</p>
-                    <p id="timestamp">Sent At: {message.sentAt}</p>
+                    <p id="timestamp">Sent At: {this.convertTime(message.sentAt)[1] + ':' + this.convertTime(message.sentAt)[2]}</p>
                   </div>
               )}
               </div>
+              <section>
+                <form onSubmit={(e) => {e.preventDefault(); this.createMessages(this.state.newMessage) } }>
+                  <input type="text" value={this.state.newMessage} onChange={(e) => this.handleChange(e)} placeholder="New Message" />
+                  <input type="submit" />
+                </form>
+              </section>
           </div>
         );
       }
